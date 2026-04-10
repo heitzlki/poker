@@ -25,6 +25,15 @@
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
     },
     {
+      "name": "release-py",
+      "inherits": "release",
+      "displayName": "Release + Python bindings",
+      "cacheVariables": {
+        "POKER_BUILD_PYTHON": "ON",
+        "VCPKG_MANIFEST_FEATURES": "tests;bench;python"
+      }
+    },
+    {
       "name": "asan",
       "inherits": "base",
       "displayName": "Debug + ASan/UBSan",
@@ -38,6 +47,7 @@
   "buildPresets": [
     { "name": "debug", "configurePreset": "debug" },
     { "name": "release", "configurePreset": "release" },
+    { "name": "release-py", "configurePreset": "release-py" },
     { "name": "asan", "configurePreset": "asan" }
   ],
   "testPresets": [
@@ -49,6 +59,7 @@
     },
     { "name": "debug", "inherits": "base", "configurePreset": "debug" },
     { "name": "release", "inherits": "base", "configurePreset": "release" },
+    { "name": "release-py", "inherits": "base", "configurePreset": "release-py" },
     { "name": "asan", "inherits": "base", "configurePreset": "asan" }
   ]
 }

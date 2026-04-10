@@ -11,6 +11,10 @@
     "bench": {
       "description": "Build the benchmarks",
       "dependencies": ["nanobench"]
+    },
+    "python": {
+      "description": "Build the Python bindings",
+      "dependencies": ["pybind11"]
     }
   }
 }
