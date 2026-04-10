@@ -1,7 +1,6 @@
 #include <doctest/doctest.h>
 
 #include <array>
-#include <cstdlib>
 #include <map>
 
 #include "poker/eval/evaluator.hpp"
@@ -9,15 +8,6 @@
 
 using namespace poker;
 using namespace poker::eval;
-
-namespace {
-
-std::uint64_t env_u64(const char* name, std::uint64_t fallback) {
-  const char* v = std::getenv(name);
-  return v != nullptr ? std::strtoull(v, nullptr, 10) : fallback;
-}
-
-} // namespace
 
 // All C(52,5) = 2,598,960 five-card hands: the fast evaluator must agree with the
 // reference bit for bit, and the reference itself must reproduce the known category
@@ -66,8 +56,8 @@ TEST_CASE("exhaustive five-card differential and category census") {
 // Random 7-card hands, reproducible from POKER_DIFF_SEED; iteration count is
 // tunable via POKER_DIFF_ITERS for longer local or nightly runs.
 TEST_CASE("random seven-card differential") {
-  const std::uint64_t seed = env_u64("POKER_DIFF_SEED", 20260909);
-  const std::uint64_t iters = env_u64("POKER_DIFF_ITERS", 200000);
+  const std::uint64_t seed = test::env_u64("POKER_DIFF_SEED", 20260909);
+  const std::uint64_t iters = test::env_u64("POKER_DIFF_ITERS", 200000);
   test::Rng rng{seed};
 
   std::array<Card, kNumCards> deck{};
