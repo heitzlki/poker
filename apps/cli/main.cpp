@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cctype>
 #include <charconv>
 #include <chrono>
 #include <cstdint>
@@ -685,12 +686,51 @@ std::string options_text(const LegalActions* la) {
 // Repaint the whole screen: status panel on top, log in the middle, options
 // bar above the prompt line. Overwrites in place, so nothing scrolls except
 // the log itself.
+// Clip a frame line to the terminal width, escape codes carried through and
+// closed if the cut lands inside a colored run. A wrapped line would eat an
+// extra row and shear the whole frame.
+std::string clip_cells(const std::string& in, int cols) {
+  std::string out;
+  int used = 0;
+  bool cut = false;
+  for (std::size_t i = 0; i < in.size();) {
+    if (in[i] == '\033') {
+      const std::size_t start = i++;
+      if (i < in.size() && in[i] == '[') {
+        while (i < in.size() && !std::isalpha(static_cast<unsigned char>(in[i]))) {
+          ++i;
+        }
+        if (i < in.size()) {
+          ++i;
+        }
+      }
+      out.append(in, start, i - start);
+      continue;
+    }
+    std::size_t len = 1;
+    while (i + len < in.size() && (static_cast<unsigned char>(in[i + len]) & 0xC0) == 0x80) {
+      ++len;
+    }
+    if (used < cols) {
+      out.append(in, i, len);
+      ++used;
+    } else {
+      cut = true;
+    }
+    i += len;
+  }
+  if (cut) {
+    out += c_reset();
+  }
+  return out;
+}
+
 void draw_frame(const State& s, Session& t, const LegalActions* la) {
   const int rows = term_rows();
   const int cols = term_cols();
   std::string out = "\033[H";
   const auto line = [&](const std::string& content) {
-    out += content;
+    out += clip_cells(content, cols);
     out += "\033[K\n";
   };
 

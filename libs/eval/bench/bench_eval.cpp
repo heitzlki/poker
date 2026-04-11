@@ -1,5 +1,6 @@
 #include <nanobench.h>
 
+#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <vector>

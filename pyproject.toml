@@ -1,0 +1,21 @@
+[build-system]
+requires = ["scikit-build-core>=0.10", "pybind11>=2.12"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "pokercore"
+version = "0.1.0"
+description = "No-limit hold'em engine"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "Apache-2.0" }
+
+[tool.scikit-build]
+cmake.version = ">=3.25"
+build.targets = ["pokercore"]
+
+[tool.scikit-build.cmake.define]
+POKER_BUILD_TESTS = "OFF"
+POKER_BUILD_BENCH = "OFF"
+POKER_BUILD_CLI = "OFF"
+POKER_BUILD_PYTHON = "ON"

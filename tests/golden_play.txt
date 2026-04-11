@@ -1,0 +1,77 @@
+no-limit hold'em · blinds 5/10 · 2 bots · stacks 1000
+type help at the table for the commands
+
+━━━ HAND #1 ━━ blinds 5/10 ━━━━━━━━━━━━━━━━━━━━
+  you      1000  btn
+  bot1     1000  sb
+  bot2     1000  bb
+
+  [bot1]  posts 5
+  [bot2]  posts 10
+
+  you      1000             8d 6c
+  bot1      995  bet 5    
+  bot2      990  bet 10   
+  pot 15 · to call 10
+  (f)old · (c)all 10 · (r)aise to 20-1000 · (h)elp
+>   [you]   call  10
+  [bot1]  calls 5
+  [bot2]  checks
+
+  ── FLOP ──  8s 7d 5d  · pot 30
+  [bot1]  checks
+  [bot2]  checks
+
+  you       990             8d 6c
+  bot1      990           
+  bot2      990           
+  pot 30
+  (f)old · (x) check · (r)aise to 10-990 · (h)elp
+>   [you]   check
+
+  ── TURN ──  8s 7d 5d 8h  · pot 30
+  [bot1]  checks
+  [bot2]  checks
+
+  you       990             8d 6c
+  bot1      990           
+  bot2      990           
+  pot 30
+  (f)old · (x) check · (r)aise to 10-990 · (h)elp
+>   [you]   bet  30
+  [bot1]  calls 30
+  [bot2]  calls 30
+
+  ── RIVER ──  8s 7d 5d 8h 5h  · pot 120
+  [bot1]  checks
+  [bot2]  checks
+
+  you       960             8d 6c
+  bot1      960           
+  bot2      960           
+  pot 120
+  (f)old · (x) check · (r)aise to 10-960 · (h)elp
+>   [you]   fold
+
+  ── SHOWDOWN ──  8s 7d 5d 8h 5h  · pot 120
+  [bot1]  shows 7c 2d — two pair
+  [bot2]  shows Ks 9s — two pair
+  [bot1]  wins 120
+  stacks  you 960 · bot1 1080 · bot2 960
+
+━━━ HAND #2 ━━ blinds 5/10 ━━━━━━━━━━━━━━━━━━━━
+  you       960  bb
+  bot1     1080  btn
+  bot2      960  sb
+
+  [bot2]  posts 5
+  [you]   post  10
+  [bot1]  raises to 812
+  [bot2]  calls 807
+
+  you       950  bet 10     9h Td
+  bot1      268  bet 812  
+  bot2      148  bet 812  
+  pot 1634 · to call 802
+  (f)old · (c)all 802 · (r)aise to 960-960 · (h)elp
+> you leave with 950 chips after 2 hands

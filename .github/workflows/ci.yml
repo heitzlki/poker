@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 
 jobs:
   build-test:
@@ -19,13 +20,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install ninja (Linux)
+      - name: Install build tools (Linux)
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y ninja-build
+        run: sudo apt-get update && sudo apt-get install -y ninja-build autoconf autoconf-archive automake libtool
 
-      - name: Install ninja (macOS)
+      - name: Install build tools (macOS)
         if: runner.os == 'macOS'
-        run: brew install ninja
+        run: brew install ninja autoconf autoconf-archive automake libtool
 
       - name: Cache vcpkg binary cache
         uses: actions/cache@v4

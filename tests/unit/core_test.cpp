@@ -211,6 +211,12 @@ TEST_CASE("split pot gives the odd chip to the first seat left of the button") {
   CHECK(pay[1] == 0);
 }
 
+// rules.md promises the same seed deals the same hand on every platform.
+TEST_CASE("shuffles are reproducible across platforms") {
+  const auto deck = shuffled_deck(42);
+  CHECK(test::hand_str({deck.begin(), deck.begin() + 10}) == "Jh 4d 5s 6s 3d Kd 6c Qs 7h Ts");
+}
+
 TEST_CASE("blinds can put both players all-in at the deal") {
   const TableConfig cfg{5, 10};
   const std::vector<Chips> stacks{5, 10};

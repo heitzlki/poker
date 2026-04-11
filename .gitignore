@@ -6,6 +6,7 @@ vcpkg_installed/
 
 # Editor / tooling caches
 .cache/
+.venv/
 .DS_Store
 compile_commands.json
 .vscode/

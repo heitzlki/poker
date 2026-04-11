@@ -1,9 +1,11 @@
 #include <doctest/doctest.h>
 
+#include <algorithm>
 #include <vector>
 
 #include "poker/core/engine.hpp"
 #include "poker/core/shuffle.hpp"
+#include "poker/eval/evaluator.hpp"
 #include "test_util.hpp"
 
 using namespace poker;
@@ -38,6 +40,97 @@ Action pick_action(const LegalActions& la, test::Rng& rng) {
     }
   }
   return a;
+}
+
+// A second opinion on payouts, written the dumb way: peel off one all-in
+// level at a time and award it. Uses the slow evaluator on purpose.
+std::array<Chips, kMaxSeats> payouts_ref(const State& s) {
+  std::array<Chips, kMaxSeats> out{};
+  std::array<Chips, kMaxSeats> left{};
+  int alive = 0;
+  for (int i = 0; i < s.num_seats; ++i) {
+    left[static_cast<std::size_t>(i)] = s.total_committed[i];
+    alive += s.folded[i] ? 0 : 1;
+  }
+  if (alive == 1) {
+    for (int i = 0; i < s.num_seats; ++i) {
+      if (!s.folded[i]) {
+        for (const Chips c : left) {
+          out[static_cast<std::size_t>(i)] += c;
+        }
+      }
+    }
+    return out;
+  }
+
+  eval::HandRank rank[kMaxSeats] = {};
+  for (int i = 0; i < s.num_seats; ++i) {
+    if (!s.folded[i]) {
+      Card seven[kHoleCards + kBoardCards];
+      seven[0] = s.hole[i][0];
+      seven[1] = s.hole[i][1];
+      for (int b = 0; b < kBoardCards; ++b) {
+        seven[kHoleCards + b] = s.board[b];
+      }
+      rank[i] = eval::evaluate_ref(seven);
+    }
+  }
+
+  while (true) {
+    Chips level = 0;
+    for (int i = 0; i < s.num_seats; ++i) {
+      if (!s.folded[i] && left[static_cast<std::size_t>(i)] > 0 &&
+          (level == 0 || left[static_cast<std::size_t>(i)] < level)) {
+        level = left[static_cast<std::size_t>(i)];
+      }
+    }
+    if (level == 0) {
+      break;
+    }
+    bool eligible[kMaxSeats] = {};
+    for (int i = 0; i < s.num_seats; ++i) {
+      eligible[i] = !s.folded[i] && left[static_cast<std::size_t>(i)] > 0;
+    }
+    Chips pot = 0;
+    for (auto& c : left) {
+      const Chips take = std::min(c, level);
+      c -= take;
+      pot += take;
+    }
+    bool last = true;
+    for (int i = 0; i < s.num_seats; ++i) {
+      if (!s.folded[i]) {
+        last = last && left[static_cast<std::size_t>(i)] == 0;
+      }
+    }
+    if (last) { // folded chips beyond the top live level join the last pot
+      for (auto& c : left) {
+        pot += c;
+        c = 0;
+      }
+    }
+    eval::HandRank best = 0;
+    int winners = 0;
+    for (int i = 0; i < s.num_seats; ++i) {
+      if (eligible[i]) {
+        best = std::max(best, rank[i]);
+      }
+    }
+    for (int i = 0; i < s.num_seats; ++i) {
+      if (eligible[i] && rank[i] == best) {
+        ++winners;
+      }
+    }
+    Chips odd = pot % winners;
+    int seat = (s.button + 1) % s.num_seats;
+    for (int k = 0; k < s.num_seats; ++k, seat = (seat + 1) % s.num_seats) {
+      if (eligible[seat] && rank[seat] == best) {
+        out[static_cast<std::size_t>(seat)] += (pot / winners) + (odd > 0 ? 1 : 0);
+        odd = std::max<Chips>(odd - 1, 0);
+      }
+    }
+  }
+  return out;
 }
 
 } // namespace
@@ -99,5 +192,7 @@ TEST_CASE("random playouts conserve chips") {
       }
     }
     REQUIRE(paid == pot);
+    // conservation alone would miss paying the wrong player
+    REQUIRE(pay == payouts_ref(s));
   }
 }

@@ -11,4 +11,15 @@ if(POKER_BUILD_TESTS)
 
   add_test(NAME cli_play
     COMMAND bash -c "printf 'f\\nq\\n' | $<TARGET_FILE:poker_cli> play --bots 2 --seed 7")
+
+  add_test(NAME cli_bad_bots COMMAND poker_cli play --bots 99)
+  add_test(NAME cli_bad_stakes COMMAND poker_cli play --stakes nope)
+  add_test(NAME cli_unknown_command COMMAND poker_cli bogus)
+  set_tests_properties(cli_bad_bots cli_bad_stakes cli_unknown_command
+    PROPERTIES WILL_FAIL TRUE)
+
+  # Regenerate after deliberate output changes:
+  #   printf 'c\nx\nb 30\nf\nq\n' | poker play --bots 2 --seed 7 > tests/golden_play.txt
+  add_test(NAME cli_golden
+    COMMAND bash -c "printf 'c\\nx\\nb 30\\nf\\nq\\n' | $<TARGET_FILE:poker_cli> play --bots 2 --seed 7 | diff -u ${CMAKE_SOURCE_DIR}/tests/golden_play.txt -")
 endif()

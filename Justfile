@@ -20,8 +20,16 @@ play *args="": (build "release")
 py: (build "release-py")
     ctest --preset release-py
 
+example: (build "release-py")
+    PYTHONPATH=build/release-py/bindings/python \
+      "$(sed -n 's/^Python_EXECUTABLE:FILEPATH=//p' build/release-py/CMakeCache.txt)" \
+      bindings/python/example.py
+
 fmt:
     find libs tests -name '*.hpp' -o -name '*.cpp' | xargs clang-format -i
+
+install: (build "release")
+    ln -sf {{justfile_directory()}}/build/release/apps/cli/poker /opt/homebrew/bin/poker
 
 clean:
     rm -rf build
