@@ -1,0 +1,16 @@
+{
+  "name": "poker",
+  "version": "0.1.0",
+  "builtin-baseline": "f781d9387e4684783e69e136e2e124ff4660bffc",
+  "dependencies": [],
+  "features": {
+    "tests": {
+      "description": "Build the test suite",
+      "dependencies": ["doctest"]
+    },
+    "bench": {
+      "description": "Build the benchmarks",
+      "dependencies": ["nanobench"]
+    }
+  }
+}
