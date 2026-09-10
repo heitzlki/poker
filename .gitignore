@@ -1,0 +1,12 @@
+# Build trees — one per CMake preset, all under build/
+build/
+
+# vcpkg installs dependencies here in manifest mode (per-project, reproducible)
+vcpkg_installed/
+
+# Editor / tooling caches
+.cache/
+.DS_Store
+compile_commands.json
+.vscode/
+.idea/
